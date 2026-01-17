@@ -93,3 +93,45 @@ for (BlockFace face : faces) {
 - 自定义机器 (Custom Machines)
 - 祭坛/仪式结构 (Rituals)
 - 传送门框架 (Portal Frames)
+
+---
+
+## 特殊案例：微型多方块与根节点归一化 (Micro-Multiblock & Root Normalization)
+
+在处理双格高作物（如水稻、玉米）等“微型多方块结构”时，常遇到的一个严重问题是**交互错位**。
+
+### 问题描述 (The Problem)
+点击或交互双高作物的**上半部分**时，逻辑往往错误地将其视为独立的方块，导致：
+1.  **第三层 Bug (Third Layer Bug)**: 对上半部分使用骨粉，逻辑误以为它是根部，在其上方生成新的方块，导致作物悬空或出现第三层。
+2.  **生长停滞 (Stuck Growth)**: 逻辑检查上半部分的 `crop_stage`（通常为 0 或未定义），而非根部的实际阶段，导致生长条件判断失败。
+
+### 解决方案 (The Solution)
+在执行任何逻辑（生长、破坏、交互）之前，**强制将坐标归一化到根方块**（通常是下半部分）。这确保了状态的“单一真理来源” (Single Source of Truth)。
+
+### 代码模式 (Code Pattern)
+在所有交互/生长方法的入口处添加归一化逻辑：
+
+```java
+public void handleInteraction(Location loc) {
+    Block block = loc.getBlock();
+
+    // CraftEngine 集成检查
+    if (com.example.simplecuisine.util.CraftEngineHook.isEnabled()) {
+        // 获取 'half' 属性: "0"=下半部, "1"=上半部
+        String half = com.example.simplecuisine.util.CraftEngineHook.getCustomBlockProperty(block, "half");
+        
+        // 如果是上半部，向下偏移至根部
+        if ("1".equals(half)) {
+            block = block.getRelative(BlockFace.DOWN);
+        }
+    }
+    
+    // 此时 'block' 保证是根部 (Lower) 方块
+    int stage = getRiceStage(block); // 安全地查询状态
+    // ... 执行逻辑 ...
+}
+```
+
+### 适用性
+- **CraftEngine 双格方块**: 必须应用此模式。
+- **原版双格花卉**: 类似的逻辑（虽然原版通常自己处理，但在自定义逻辑中需手动处理）。

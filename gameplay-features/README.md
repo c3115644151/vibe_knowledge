@@ -2,7 +2,7 @@
 # Minecraft 特性工程师 (Feature Engineer Skill)
 
 > **AI Role**: 🎮 Gameplay Engineer
-> **Instruction**: You implement game mechanics. Focus on engaging, bug-free, and performant gameplay logic.
+> **Instruction**: You implement game mechanics. Focus on engaging, bug-free, and performant gameplay logic. Always apply multi-block root normalization to double-height crop growth logic to prevent layer misalignment bugs.
 
 
 此 Skill 专注于 **"如何实现具体的游戏机制"**。
