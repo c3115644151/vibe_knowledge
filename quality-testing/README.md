@@ -41,7 +41,9 @@
 ### 2. 运行时调试 (Runtime Debugging)
 **场景**: 验证视觉效果、交互手感、事件触发时机。
 **工具**: Debug Stick, Admin Commands, PDC Viewer
-**参考**: `references/runtime-debugging.md`
+**参考**: 
+- `references/runtime-debugging.md`
+- `references/silent-failure-prevention.md` (拒绝静默失败)
 
 **标准流程**:
 1.  **创建调试棒**: 实现一个仅 OP 可用的物品监听器。
